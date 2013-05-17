@@ -1,0 +1,161 @@
+<html>
+<head>
+	<title>Imagenes</title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		function submitForm() {
+			alert("SubmitForm called");
+			var googleForm = document.getElementById("googleForm");
+			googleForm.submit();
+		}
+
+		function loadImage() {
+			alert("LoadImage called");
+			var canvasContainer = document.getElementById('canvasItem');
+			var context = canvasContainer.getContext('2d');
+			var imageObj = new Image();
+			imageObj.onload = function() {
+				canvasContainer.width = this.width;
+				canvasContainer.height = this.height;
+				snapshotItem.width = this.width;
+				snapshotItem.height = this.height;
+				context.drawImage(this,0,0,canvasContainer.width, canvasContainer.height);
+			}
+			//imageObj.src = 'http://www.w3.org/html/logo/downloads/HTML5_Logo_512.png';
+			//imageObj.src = 'HTML5_Logo_512.png';
+			imageObj.src = 'on24.jpg';
+		}
+
+		function saveImage() {
+			alert("SaveImage called");
+			var canvasData = canvasItem.toDataURL();
+			snapshotItem.width = canvasItem.width;
+			snapshotItem.height = canvasItem.height;
+			document.getElementById('snapshotItem').src = canvasData;
+			document.getElementById('snapshotItem').value = canvasData;
+		}
+
+		function submitFORM(path, params, method) {
+	    method = method || "post"; 
+			 
+		  var form = document.createElement("form");
+		  form.setAttribute("method", method);
+			form.setAttribute("action", path);
+									 
+			//Move the submit function to another variable
+			//so that it doesn't get overwritten.
+			form._submit_function_ = form.submit;
+			
+			for(var key in params) {
+				if(params.hasOwnProperty(key)) {
+					var hiddenField = document.createElement("input");
+					hiddenField.setAttribute("type", "hidden");
+					hiddenField.setAttribute("name", key);
+					hiddenField.setAttribute("value", params[key]);
+																																											 
+					form.appendChild(hiddenField);
+				}
+			}
+												 
+			document.body.appendChild(form);
+			form._submit_function_();
+		}
+
+
+		function dataURItoBlob(dataURI) {
+
+		    	'use strict'
+		    	var byteString, 
+			    mimestring 
+
+			if(dataURI.split(',')[0].indexOf('base64') !== -1 ) {
+				byteString = atob(dataURI.split(',')[1])
+			} else {
+			        byteString = decodeURI(dataURI.split(',')[1])
+			}
+
+	        	mimestring = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+			var content = new Array();
+		    	for (var i = 0; i < byteString.length; i++) {
+				content[i] = byteString.charCodeAt(i)
+			}
+
+		        return new Blob([new Uint8Array(content)], {type: mimestring});
+		}
+
+		function submitData() {
+			var formRef = document.getElementById("formElement");
+			var formItem = new FormData(formRef);
+			var dataURL = document.getElementById("canvasItem").toDataURL('image/jpeg', 0.5);
+			var dataBlob = dataURItoBlob(dataURL);
+			formItem.append("encoded_image", dataBlob);
+
+			var oReq = new XMLHttpRequest();
+			oReq.open("POST",formRef.action, true);
+			oReq.onload = function(e) {
+				document.body.innerHTML = oReq.responseText;
+			}
+			oReq.onloadend = function(e) {
+				cara = this.getAllResponseHeaders();
+				cara3 = this.getResponseHeader("Location");
+				cosa = this.status;
+			}
+			oReq.onreadystatechange = submitHandler;
+			oReq.send(formItem);
+
+		}
+
+		function submitHandler() {
+			cosa = this.readyState;
+			cosa2 = this.status;
+			if(this.readyState == 2) {
+				cosa3 = this.getResponseHeader("Location");
+				cosa4 = this.getAllResponseHeaders();
+			}
+		}
+		
+	</script>
+
+	<table>
+		<tr>
+			<td>
+				<canvas id="canvasItem" width='150' height='150'></canvas> 
+			</td>
+			<td>
+				<img id="snapshotItem"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Test de aplicaciones
+			</td>
+			<td>
+				<input type="button" id="loadImageBtn" onClick="javascript: loadImage()" value="Load Image"/>
+				<input type="button" id="saveImageBtn" onClick="javascript: saveImage()" value="Save Image"/>
+				<input type="button" id="searchBtn" onClick="javascript: submitData()" value="Search"/>
+			</td>
+		</tr>
+	</table>
+	<div id="formContainer">
+	</div>
+	<form action="http://www.google.com/searchbyimage/upload" method="post" enctype="multipart/form-data" id="formElement">
+
+		<input type="hidden" name="image_url" id="image_url" />
+		<input type="hidden" name="btnG" id="btnG" value="Search" />
+		<!--		<input type="hidden" name="encoded_image" id="encoded_image" filename="test.jpg" Content-type="image/jpeg"/> -->
+		<input type="hidden" name="image_content" id="image_content" />
+		<input type="hidden" name="filename" id="filename" />
+		<input type="hidden" name="hl" id="hl" value="en" />
+		<input type="hidden" name="bih" id="bih" value="507" />
+		<input type="hidden" name="biw" id="biw" value="biw" />
+		
+		<!--<img src="http://2.bp.blogspot.com/-G0E9tSUBcys/UKJ4h9laEcI/AAAAAAAAAA0/6Hgxux0pS6M/s1600/pisa.jpg" name="image_content"/>--
+		
+		<!--		<canvas name="encoded_image"/> -->
+		<!--		<input type="submit" name="Search"/> -->
+	</form> 
+</body>
+</html>
